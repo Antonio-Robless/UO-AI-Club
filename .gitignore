@@ -1,5 +1,6 @@
 # API keys — never commit this
 .env
+README.md
 
 # Python
 __pycache__/
