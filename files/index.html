@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Driving Efficiency Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     TRAFFIC INTRO OVERLAY
+══════════════════════════════════════ -->
+<div id="traffic-intro">
+  <div id="intro-inner">
+    <div id="intro-badge"><i data-lucide="alert-circle"></i> GRIDLOCK DETECTED</div>
+    <h2 id="intro-title">STUCK IN TRAFFIC</h2>
+    <div id="intro-road">
+      <div class="intro-lane"   id="intro-lane-0"></div>
+      <div class="intro-divider"></div>
+      <div class="intro-lane"   id="intro-lane-1"></div>
+      <div class="intro-divider"></div>
+      <div class="intro-lane"   id="intro-lane-2"></div>
+    </div>
+    <p id="intro-msg">Calculating your escape route&hellip;</p>
+    <div id="intro-bar-wrap">
+      <div id="intro-bar"><div id="intro-fill"></div></div>
+      <span id="intro-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE HERO
+══════════════════════════════════════ -->
+<header class="page-hero">
+  <div class="hero-content">
+    <!-- Eyebrow -->
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Traffic Intelligence Platform
+    </div>
+
+    <!-- Headline -->
+    <h1>City Driving<br><span class="h1-accent">Efficiency Tool</span></h1>
+    <p class="subtitle">Optimize every commute — real-time conditions, routing decisions,<br>incident response, and the real cost of congestion.</p>
+
+    <!-- Stat chips -->
+    <div class="hero-stats">
+      <div class="hero-stat-chip">
+        <span class="hsc-icon"><i data-lucide="timer"></i></span>
+        <div>
+          <div class="hsc-val">51 hrs/yr</div>
+          <div class="hsc-lbl">avg time lost per US driver</div>
+        </div>
+      </div>
+      <div class="hero-stat-chip">
+        <span class="hsc-icon"><i data-lucide="banknote"></i></span>
+        <div>
+          <div class="hsc-val">$81 Billion</div>
+          <div class="hsc-lbl">annual US congestion cost</div>
+        </div>
+      </div>
+      <div class="hero-stat-chip">
+        <span class="hsc-icon"><i data-lucide="building-2"></i></span>
+        <div>
+          <div class="hsc-val">119 hrs/yr</div>
+          <div class="hsc-lbl">NYC pre-COVID peak</div>
+        </div>
+      </div>
+      <div class="hero-stat-chip">
+        <span class="hsc-icon"><i data-lucide="alert-circle"></i></span>
+        <div>
+          <div class="hsc-val">+4.4 min</div>
+          <div class="hsc-lbl">EMS delay in peak traffic</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animated road scene -->
+  <div class="hero-road-scene">
+    <div class="hero-road-labels">
+      <span>▶ Free flow</span>
+      <span>Congested ◀</span>
+    </div>
+    <div class="hero-road">
+      <!--
+        Lane 1 → free-flow: 12 cars, all --spd:9s
+        Interval = 9s/12 = 0.75s → gap ~168px (car ~60px wide) — close traffic, no overlap.
+      -->
+      <div class="hero-lane">
+        <div class="hcar" style="--w:60px;--c:#3b82f6;--spd:9s;--dly:0s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:58px;--c:#64748b;--spd:9s;--dly:-0.75s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:62px;--c:#1d4ed8;--spd:9s;--dly:-1.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:56px;--c:#7c3aed;--spd:9s;--dly:-2.25s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:60px;--c:#0f766e;--spd:9s;--dly:-3s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:58px;--c:#475569;--spd:9s;--dly:-3.75s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:62px;--c:#2563eb;--spd:9s;--dly:-4.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:56px;--c:#9333ea;--spd:9s;--dly:-5.25s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:60px;--c:#0ea5e9;--spd:9s;--dly:-6s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:58px;--c:#334155;--spd:9s;--dly:-6.75s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:60px;--c:#1e40af;--spd:9s;--dly:-7.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar" style="--w:56px;--c:#6d28d9;--spd:9s;--dly:-8.25s"><div class="hcar-roof"></div></div>
+      </div>
+      <div class="hero-divider-dash"></div>
+      <!--
+        Lane 2 ← congested: 16 cars, all --spd:24s
+        Interval = 24s/16 = 1.5s → gap ~126px (car ~58px wide) — bumper-to-bumper, no overlap.
+      -->
+      <div class="hero-lane">
+        <div class="hcar hcar-l" style="--w:58px;--c:#dc2626;--spd:24s;--dly:0s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:60px;--c:#1f2937;--spd:24s;--dly:-1.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:56px;--c:#7f1d1d;--spd:24s;--dly:-3s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:60px;--c:#374151;--spd:24s;--dly:-4.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:58px;--c:#1e3a5f;--spd:24s;--dly:-6s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:56px;--c:#3b0764;--spd:24s;--dly:-7.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:60px;--c:#065f46;--spd:24s;--dly:-9s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:58px;--c:#b91c1c;--spd:24s;--dly:-10.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:56px;--c:#111827;--spd:24s;--dly:-12s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:60px;--c:#9b1c1c;--spd:24s;--dly:-13.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:58px;--c:#1e293b;--spd:24s;--dly:-15s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:56px;--c:#44403c;--spd:24s;--dly:-16.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:60px;--c:#7c2d12;--spd:24s;--dly:-18s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:58px;--c:#1c1917;--spd:24s;--dly:-19.5s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:56px;--c:#4c1d95;--spd:24s;--dly:-21s"><div class="hcar-roof"></div></div>
+        <div class="hcar hcar-l" style="--w:60px;--c:#713f12;--spd:24s;--dly:-22.5s"><div class="hcar-roof"></div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════
+     STICKY NAV
+══════════════════════════════════════ -->
+<div class="nav-sticky">
+  <nav class="nav-pills">
+    <a class="nav-pill" href="#section-basics">Basics</a>
+    <a class="nav-pill" href="#section-tips">Tips</a>
+    <a class="nav-pill" href="#section-incidents">Incident Simulator</a>
+    <a class="nav-pill" href="#section-realworld">Real-World Impact</a>
+    <a class="nav-pill" href="#section-map">Live Map</a>
+  </nav>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 1 — BASICS
+══════════════════════════════════════ -->
+<div class="sec-header reveal" data-num="01" id="section-basics">
+  <div class="sec-icon-badge" style="--badge-bg:linear-gradient(135deg,#dbeafe,#bfdbfe)"><i data-lucide="timer"></i></div>
+  <div class="sec-text">
+    <h2 class="sec-title">Basics</h2>
+    <p class="sec-desc">Live conditions, routing decisions, and trip cost estimation</p>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- Live API Status Card -->
+  <div class="card reveal" id="live-status-card">
+    <div class="card-title"><i data-lucide="radio"></i> Live Traffic Feed</div>
+    <div id="live-api-status" style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Connecting to traffic API…</div>
+    <div class="live-location-row" id="live-location-row">
+      <span class="live-dot live-pulse"></span>
+      <span id="live-location-text">Detecting location…</span>
+    </div>
+    <div class="live-metrics" id="live-metrics" style="display:none">
+      <div class="live-metric"><div class="live-metric-val" id="lm-speed">—</div><div class="live-metric-lbl">Current Speed</div></div>
+      <div class="live-metric"><div class="live-metric-val" id="lm-freeflow">—</div><div class="live-metric-lbl">Free-Flow Speed</div></div>
+      <div class="live-metric"><div class="live-metric-val" id="lm-ratio">—</div><div class="live-metric-lbl">Flow Ratio</div></div>
+      <div class="live-metric"><div class="live-metric-val" id="lm-source">—</div><div class="live-metric-lbl">Data Source</div></div>
+    </div>
+    <div id="live-no-key-msg" style="display:none;background:var(--surface2);border-radius:8px;padding:12px;font-size:0.8rem;color:var(--muted);margin-top:8px">
+      <i data-lucide="settings"></i> Running on <strong>synthetic data</strong> (time-of-day model).<br>Add API keys to <code>.env</code> for real-time data.
+    </div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-top:12px">Auto-refreshes every 60 s · last: <span id="live-last-updated">—</span></div>
+  </div>
+
+  <!-- Traffic Clock -->
+  <div class="card reveal">
+    <div class="card-title"><i data-lucide="timer"></i> Real-Time Traffic Level</div>
+    <div id="clock-display">--:--:--</div>
+    <div class="slider-row">
+      <span>Simulate time</span>
+      <input type="range" id="time-slider" min="0" max="1439" step="1" />
+      <span class="slider-val" id="slider-label">Now</span>
+    </div>
+    <div id="traffic-bar"><div id="traffic-fill"></div></div>
+    <div id="traffic-label"></div>
+    <div id="traffic-advice"></div>
+    <p class="hint-text">Double-click slider to snap back to real time</p>
+  </div>
+
+  <!-- Heatmap -->
+  <div class="card reveal">
+    <div class="card-title"><i data-lucide="bar-chart-2"></i> Traffic Heatmap — Typical Week</div>
+    <div class="heatmap-hours" id="heatmap-hours"></div>
+    <div id="heatmap-grid"></div>
+    <div class="heatmap-legend">
+      <span>&#9632; <span style="color:#1a9a5c;font-weight:600">Light</span></span>
+      <span>&#9632; <span style="color:#d97706;font-weight:600">Moderate</span></span>
+      <span>&#9632; <span style="color:#ef4444;font-weight:600">Heavy</span></span>
+      <span>&#9632; <span style="color:#991b1b;font-weight:600">Gridlock</span></span>
+    </div>
+  </div>
+
+  <!-- Decision Helper -->
+  <div class="card reveal">
+    <div class="card-title"><i data-lucide="lightbulb"></i> Route Decision Helper</div>
+
+    <div class="decision-group-label">Trip distance</div>
+    <div class="decision-btn-group">
+      <button class="btn" data-group="dist" data-val="short">Under 3 mi</button>
+      <button class="btn" data-group="dist" data-val="medium">3–10 mi</button>
+      <button class="btn" data-group="dist" data-val="long">10+ mi</button>
+    </div>
+
+    <div class="decision-group-label">Departure time</div>
+    <div class="decision-btn-group">
+      <button class="btn" data-group="time" data-val="peak">Peak (7–9a / 4–7p)</button>
+      <button class="btn" data-group="time" data-val="midday">Midday (9a–4p)</button>
+      <button class="btn" data-group="time" data-val="offpeak">Night / Early AM</button>
+    </div>
+
+    <div class="decision-group-label">Priority</div>
+    <div class="decision-btn-group">
+      <button class="btn" data-group="prio" data-val="speed">Fastest</button>
+      <button class="btn" data-group="prio" data-val="fuel">Least Fuel</button>
+      <button class="btn" data-group="prio" data-val="stress">Least Stress</button>
+    </div>
+
+    <div id="decision-result" style="display:none"></div>
+  </div>
+
+  <!-- Fuel / Time Estimator -->
+  <div class="card reveal">
+    <div class="card-title"><i data-lucide="fuel"></i> Trip Cost Estimator</div>
+    <div class="field-row">
+      <label>Distance (miles)</label>
+      <input type="number" id="f-dist" min="0.1" step="0.1" value="8" />
+    </div>
+    <div class="field-row">
+      <label>Fuel economy (MPG)</label>
+      <input type="number" id="f-mpg" min="5" step="1" value="30" />
+    </div>
+    <div class="field-row">
+      <label>Gas price ($/gallon)</label>
+      <input type="number" id="f-price" min="0.5" step="0.01" value="3.79" />
+    </div>
+    <div class="field-row">
+      <label>Traffic condition</label>
+      <select id="f-traffic">
+        <option value="free">Free-flowing (avg 35 mph)</option>
+        <option value="light">Light (avg 25 mph)</option>
+        <option value="moderate" selected>Moderate (avg 18 mph)</option>
+        <option value="heavy">Heavy (avg 10 mph)</option>
+        <option value="gridlock">Gridlock (avg 5 mph)</option>
+      </select>
+    </div>
+    <button class="calc-btn" onclick="calcFuel()">Calculate Trip Cost</button>
+    <div id="fuel-result">
+      <div class="stat-row"><span>Est. drive time</span><span class="stat-val" id="r-time">—</span></div>
+      <div class="stat-row"><span>Fuel used</span><span class="stat-val" id="r-fuel">—</span></div>
+      <div class="stat-row"><span>Fuel cost</span><span class="stat-val" id="r-cost">—</span></div>
+      <div class="stat-row"><span>Stop-and-go penalty</span><span class="stat-val" id="r-penalty">—</span></div>
+      <div class="stat-row">
+        <span>Efficiency tip</span>
+        <span class="stat-val" id="r-tip"
+              style="color:var(--green);font-size:0.78rem;text-align:right;max-width:58%">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Efficiency Score -->
+  <div class="card reveal">
+    <div class="card-title"><i data-lucide="trophy"></i> Build Your Efficiency Score</div>
+    <div class="score-wrap" id="score-wrap"></div>
+    <div id="overall-score">
+      <div class="big-num" id="score-num">—</div>
+      <div class="big-label">Overall City Driving Score</div>
+    </div>
+  </div>
+
+</div><!-- /grid basics -->
+
+<!-- ══════════════════════════════════════
+     SECTION 5 — LIVE MAP
+══════════════════════════════════════ -->
+<div class="sec-header reveal" data-num="05" id="section-map">
+  <div class="sec-icon-badge" style="--badge-bg:linear-gradient(135deg,#e0f2fe,#bae6fd)"><i data-lucide="globe"></i></div>
+  <div class="sec-text">
+    <h2 class="sec-title">Live Map</h2>
+    <p class="sec-desc">Real-time traffic conditions, nearby incidents, and location search</p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card full-width reveal" style="padding:0;overflow:hidden">
+    <!-- Search bar + status row -->
+    <div class="map-toolbar">
+      <div class="map-search-wrap">
+        <span class="map-search-icon"><i data-lucide="search"></i></span>
+        <input type="text" id="map-search-input" class="map-search-input" placeholder="Search any location…" autocomplete="off" />
+      </div>
+      <div class="map-status">
+        <span class="live-dot live-pulse"></span>
+        <span id="map-status-text">Loading map…</span>
+      </div>
+      <div class="map-legend">
+        <span class="map-legend-dot" style="background:#1a9a5c"></span><span>Free</span>
+        <span class="map-legend-dot" style="background:#d97706"></span><span>Slow</span>
+        <span class="map-legend-dot" style="background:#e02424"></span><span>Congested</span>
+      </div>
+    </div>
+    <!-- Map canvas -->
+    <div id="live-map-canvas" class="live-map-canvas"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 2 — TIPS
+══════════════════════════════════════ -->
+<div class="sec-header reveal" data-num="02" id="section-tips">
+  <div class="sec-icon-badge" style="--badge-bg:linear-gradient(135deg,#dcfce7,#bbf7d0)"><i data-lucide="book-open"></i></div>
+  <div class="sec-text">
+    <h2 class="sec-title">Tips Library</h2>
+    <p class="sec-desc">Proven strategies for timing, routing, fuel, parking, and stress</p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card full-width reveal">
+    <div class="card-title"><i data-lucide="book-open"></i> Smart City Driving Tips</div>
+    <div class="tips-filter" id="tips-filter"></div>
+    <div id="tips-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 3 — INCIDENT SIMULATOR
+══════════════════════════════════════ -->
+<div class="sec-header reveal" data-num="03" id="section-incidents">
+  <div class="sec-icon-badge" style="--badge-bg:linear-gradient(135deg,#fee2e2,#fecaca)"><i data-lucide="alert-circle"></i></div>
+  <div class="sec-text">
+    <h2 class="sec-title">Incident &amp; Extreme Circumstances Simulator</h2>
+    <p class="sec-desc">Model accidents, police stops, closures, weather events, and more</p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card full-width reveal">
+    <div class="card-title"><i data-lucide="alert-circle"></i> Incident Simulator</div>
+    <p style="font-size:0.84rem;color:var(--muted);margin-bottom:4px">
+      Select an incident type, road type, and traffic level to see realistic delay estimates, queue lengths, and exactly what to do.
+    </p>
+
+    <div class="inc-section-title">Step 1 — Select Incident Type</div>
+    <div id="incident-type-grid"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px" id="step2-grid">
+      <div>
+        <div class="inc-section-title">Step 2 — Road Type</div>
+        <div id="incident-road-grid"></div>
+      </div>
+      <div>
+        <div class="inc-section-title">Step 3 — Current Traffic Level</div>
+        <div id="incident-traffic-grid"></div>
+      </div>
+    </div>
+
+    <div id="incident-prompt"><i data-lucide="flag"></i> Select an incident type, road type, and traffic level above to simulate impact.</div>
+    <div id="incident-result"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 4 — REAL-WORLD IMPACT
+══════════════════════════════════════ -->
+<div class="sec-header reveal" data-num="04" id="section-realworld">
+  <div class="sec-icon-badge" style="--badge-bg:linear-gradient(135deg,#fef9c3,#fde68a)"><i data-lucide="globe-2"></i></div>
+  <div class="sec-text">
+    <h2 class="sec-title">Real-World Traffic Impact</h2>
+    <p class="sec-desc">Economic costs, health data, historic events, and city spotlights</p>
+  </div>
+</div>
+
+<div class="grid" style="padding-bottom:48px">
+  <div class="card full-width reveal">
+    <div class="card-title"><i data-lucide="globe-2"></i> How Traffic Affects the World</div>
+    <p style="font-size:0.84rem;color:var(--muted);margin-bottom:4px">
+      Real statistics, historical events, and city-by-city data on congestion's true cost.
+    </p>
+    <div id="rw-tabs" style="margin-top:16px"></div>
+    <div id="rw-cards"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════ -->
+<script src="data.js"></script>
+<script src="clock.js"></script>
+<script src="decision.js"></script>
+<script src="estimator.js"></script>
+<script src="score.js"></script>
+<script src="tips.js"></script>
+<script src="incidents.js"></script>
+<script src="realworld.js"></script>
+<script src="intro.js"></script>
+<!-- Live traffic API integration (requires server.py to be running) -->
+<script src="traffic-api.js"></script>
+<!-- Section 05 — Live Map -->
+<script src="map.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmwRQYb_JBxQlbcGPWAQUdPp9NbwfTOJk&libraries=places&callback=initLiveMap" async defer></script>
+
+<script>
+(function () {
+  /* Responsive incident step grid */
+  var g = document.getElementById('step2-grid');
+  function resizeGrid() {
+    g.style.gridTemplateColumns = window.innerWidth < 560 ? '1fr' : '1fr 1fr';
+  }
+  resizeGrid();
+  window.addEventListener('resize', resizeGrid);
+
+  /* Nav pill smooth scroll + active highlight via IntersectionObserver */
+  var pills    = document.querySelectorAll('.nav-pill');
+  var sections = ['section-basics','section-map','section-tips','section-incidents','section-realworld'];
+
+  function setActive(id) {
+    pills.forEach(function (p) {
+      p.classList.toggle('active', p.getAttribute('href') === '#' + id);
+    });
+  }
+
+  pills.forEach(function (pill) {
+    pill.addEventListener('click', function (e) {
+      e.preventDefault();
+      var target = document.getElementById(this.getAttribute('href').slice(1));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActive(this.getAttribute('href').slice(1));
+    });
+  });
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) setActive(entry.target.id);
+    });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+
+  setActive('section-basics');
+})();
+
+/* ── Lucide icons ── */
+lucide.createIcons();
+
+/* ── Scroll reveal ── */
+(function () {
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -48px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(function (el) {
+    observer.observe(el);
+  });
+})();
+</script>
+
+</body>
+</html>
