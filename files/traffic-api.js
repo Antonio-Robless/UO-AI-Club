@@ -17,7 +17,7 @@
   'use strict';
 
   // ── Config ──────────────────────────────────────────────────
-  const API_BASE    = 'http://localhost:8080/api';
+  const API_BASE    = '/api';
   const POLL_MS     = 60_000;   // refresh every 60 seconds
   const DEFAULT_LAT = 44.0521;
   const DEFAULT_LON = -123.0868;

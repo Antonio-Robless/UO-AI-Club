@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  var API_BASE    = 'http://localhost:8080/api';
+  var API_BASE    = '/api';
   var DEFAULT_LAT = 44.0521;
   var DEFAULT_LON = -123.0868;
   var mapInstance = null;
